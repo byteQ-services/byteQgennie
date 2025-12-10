@@ -1,11 +1,11 @@
-🧠 byteQgennie
+🧠 byteQgini
 Local PDF Intelligence • FAISS Retrieval • Ollama Reasoning
 <p align="center"> <img src="https://img.shields.io/badge/Build-Passing-00C853?style=for-the-badge"> <img src="https://img.shields.io/badge/Version-1.0.0-2962FF?style=for-the-badge"> <img src="https://img.shields.io/badge/Framework-Flask-blue?style=for-the-badge"> <img src="https://img.shields.io/badge/Vector_DB-FAISS-orange?style=for-the-badge"> <img src="https://img.shields.io/badge/Embeddings-MiniLM--L6--v2-purple?style=for-the-badge"> <img src="https://img.shields.io/badge/LLM-Ollama_llama3.2-red?style=for-the-badge"> <img src="https://img.shields.io/badge/License-OpenSource-green?style=for-the-badge"> </p>
 <p align="center"></p>
 
-# 🧠 byteQgennie – Local PDF + Ollama Chatbot (FAISS + LangChain)
+# 🧠 byteQgini – Local PDF + Ollama Chatbot (FAISS + LangChain)
 
-`byteQgennie` is a local Retrieval-Augmented Generation (RAG) chatbot that:
+`byteQgini` is a local Retrieval-Augmented Generation (RAG) chatbot that:
 
 - reads your **PDF files** from a folder,
 - builds a **FAISS vector index** using **HuggingFace embeddings**,
@@ -16,62 +16,61 @@ It is designed to run **fully locally** (aside from model downloads), with autom
 
 ---
 
-## 🚀 What This Project Does (Current Capabilities)
+## What This Project Delivers (Current Functional Scope)
 
-Right now, this project is capable of:
+The system currently provides end-to-end local document intelligence with the following capabilities:
 
-- 📄 **Loading PDFs** from the `./data/` folder
-- ✂️ **Splitting text into chunks** using `RecursiveCharacterTextSplitter`
-- 🧬 **Embedding text chunks** using `sentence-transformers/all-MiniLM-L6-v2` via `HuggingFaceEmbeddings`
-- 📚 **Building a FAISS index** for fast similarity search
-- 💾 **Saving and reusing precomputed data**:
-  - `precomputed_data/index.faiss` – FAISS index
-  - `precomputed_data/docs.pkl` – list of LangChain `Document` chunks
-  - `precomputed_data/processed_files.pkl` – names of PDFs already indexed
-- 🔁 **Detecting new PDFs automatically** on startup and in a **background thread** (periodic checks)
-- 🤖 **Answering user questions** using:
-  1. FAISS to find the most relevant chunk  
-  2. `OllamaLLM(model="llama3.2")` to generate a natural, refined answer
-- 👋 Simple **greetings & farewells**:
-  - Responds nicely to “hi”, “hello”, “bye”, etc.
-- 🌐 Exposes endpoints:
-  - `/` – renders `index.html` template (simple chat UI)
-  - `/get` – returns the chatbot response for a `msg` query
+- Automated assimilation of newly provided PDF documents into the system’s local knowledge base via the `./data/` directory
+- Deterministic segmentation of document text into semantically aligned chunks using `RecursiveCharacterTextSplitter`
+- Embedding of all text segments with `sentence-transformers/all-MiniLM-L6-v2` through `HuggingFaceEmbeddings`, ensuring efficient vector representation
+- Construction and maintenance of a FAISS-based similarity index for high-speed semantic retrieval
+- Persistent caching of all processed artifacts, including:
+  - `precomputed_data/index.faiss` — FAISS vector index
+  - `precomputed_data/docs.pkl` — serialized LangChain `Document` objects
+  - `precomputed_data/processed_files.pkl` — registry of PDFs already embedded and indexed
+- Continuous ingestion of new content:
+  - automatic detection of newly added PDFs both at startup and in scheduled background execution
+  - incremental index updates without full reprocessing
+- Retrieval-augmented response generation:
+  1. FAISS returns the most contextually relevant document segment
+  2. `OllamaLLM(model="llama3.2")` synthesizes a refined natural-language answer grounded in retrieved context
+- Basic conversational handling for user salutations and exit expressions
+- Public HTTP interface enabling interactive and programmatic access:
+  - `/` — serves the chat UI defined in `index.html`
+  - `/get` — processes user queries supplied via the `msg` parameter and returns generated responses
 
----
-
-## 🧱 Tech Stack
+## Tech Stack
 
 ### Backend
 
-- **Python**
-- **Flask** – web framework
-- **FAISS** – vector similarity search (via `faiss` + `langchain_community.vectorstores.FAISS`)
-- **LangChain** – for:
-  - `PyPDFLoader` (PDF loading)
-  - `RecursiveCharacterTextSplitter` (chunking)
-  - `Document` type
-  - `InMemoryDocstore`
-- **HuggingFaceEmbeddings**
-  - Model: `sentence-transformers/all-MiniLM-L6-v2`
-- **Ollama LLM**
-  - `OllamaLLM` from `langchain_ollama`
-  - Model: `llama3.2`
+- Python `3.10.x – 3.11.x` (recommended; avoid 3.12 for LangChain stability)
+- Flask `3.0.2` – web framework
+- FAISS CPU `1.8.0.post1` – vector similarity search
+- LangChain `0.3.5` (stable compatibility layer) including:
+  - `PyPDFLoader` (PDF ingestion)
+  - `RecursiveCharacterTextSplitter` (document chunking)
+  - `Document` schema for text storage
+  - `InMemoryDocstore` for vector-to-document mapping
+- HuggingFace Embeddings (`langchain-huggingface==0.0.21`)
+  - Model: `sentence-transformers/all-MiniLM-L6-v2` (release 2023 build)
+- Ollama Runtime `>=0.1.29`
+  - Interface: `OllamaLLM` (`langchain-ollama==0.1.3`)
+  - Local Model: `llama3.2` (2024 stable build)
 
 ### Supporting Libraries
 
-- `numpy` – for numeric arrays used by FAISS
-- `pickle` – for serializing docs + processed file names
-- `threading`, `time`, `os` – standard library for background tasks and file management
+- numpy `1.26.4` – required for FAISS vector array operations
+- pickle (Python stdlib) – persistence of docs and processed filenames
+- threading, time, os (Python stdlib) – background scan scheduler and file system management
+- pypdf `4.1.0` – PDF parsing backend leveraged by `PyPDFLoader`
 
----
 
 ## 📁 Folder & File Layout
 
 Expected structure:
 
 ```text
-byteQgennie/
+byteQgini/
 ├─ app.py                       # (the file you shared)
 ├─ data/                        # <--- Put your PDF files in here
 │   ├─ doc1.pdf
@@ -214,27 +213,44 @@ If it matches any farewell, response is:
 
 Goodbye! Have a great day!
 ```
-Requirements
 
-A requirements.txt should include:
+## Requirements
 
-arduino
-Copy code
-flask
-faiss-cpu
-numpy
-langchain-community
-langchain-text-splitters
-langchain-core
-langchain-huggingface
-langchain-ollama
-sentence-transformers
-pypdf
+The project should use the following pinned dependency versions in `requirements.txt`:
 
-Notes:
-sentence-transformers (and torch) may require separate installation depending on environment.
-pypdf is used indirectly by PyPDFLoader.
+flask==3.0.2
+faiss-cpu==1.8.0.post1
+numpy==1.26.4
+langchain-core==0.3.5
+langchain-community==0.3.5
+langchain-text-splitters==0.0.3
+langchain-huggingface==0.0.21
+langchain-ollama==0.1.3
+sentence-transformers==2.2.2
+pypdf==4.1.0
+torch==2.1.2
 
+
+### Notes
+
+- `sentence-transformers` implicitly requires **PyTorch (`torch`)**, which may not auto-install on all environments, so the pinned version is included explicitly.
+- `pypdf` is used indirectly by **`PyPDFLoader`** during PDF ingestion and page extraction.
+- Python 3.10.x–3.11.x is recommended for full compatibility with:
+  - FAISS 1.8.x
+  - LangChain 0.3.x
+  - HuggingFace stack
+- Python 3.12 is not recommended at this time due to partial LangChain compatibility constraints.
+
+---
+
+### Optional GPU Upgrade (If Needed)
+
+If GPU acceleration is required, replace `faiss-cpu` with:
+
+faiss-gpu==1.8.0
+
+
+and install CUDA-appropriate PyTorch:
 Install dependencies:
 
 ```bash
@@ -243,8 +259,8 @@ Install dependencies:
 Installation and Setup
 
 ```1. Clone the repository
-        git clone https://github.com/byteQ-services/byteQgennie.git
-        cd byteQgennie
+        git clone https://github.com/byteQ-services/byteQgini.git
+        cd byteQgini
 ```
 ```2. Create and activate a virtual environment
         python3 -m venv .venv
@@ -352,7 +368,7 @@ Opening / uses the chat interface via index.html
 
 ## Author / Maintainers
 
-**Project:** byteQgennie  
+**Project:** byteQgini  
 **Organization:** byteQ-services  
 **Purpose:** Local retrieval-augmented intelligence using FAISS, HuggingFace embeddings, and Ollama (`llama3.2`).
 
