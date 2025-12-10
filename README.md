@@ -1,9 +1,9 @@
-🧠 byteQgennie
+🧠 byteQgini
 Local PDF Intelligence • FAISS Retrieval • Ollama Reasoning
 <p align="center"> <img src="https://img.shields.io/badge/Build-Passing-00C853?style=for-the-badge"> <img src="https://img.shields.io/badge/Version-1.0.0-2962FF?style=for-the-badge"> <img src="https://img.shields.io/badge/Framework-Flask-blue?style=for-the-badge"> <img src="https://img.shields.io/badge/Vector_DB-FAISS-orange?style=for-the-badge"> <img src="https://img.shields.io/badge/Embeddings-MiniLM--L6--v2-purple?style=for-the-badge"> <img src="https://img.shields.io/badge/LLM-Ollama_llama3.2-red?style=for-the-badge"> <img src="https://img.shields.io/badge/License-OpenSource-green?style=for-the-badge"> </p>
 <p align="center"></p>
 
-# 🧠 byteQgennie – Local PDF + Ollama Chatbot (FAISS + LangChain)
+# 🧠 byteQgini – Local PDF + Ollama Chatbot (FAISS + LangChain)
 
 `byteQgennie` is a local Retrieval-Augmented Generation (RAG) chatbot that:
 
