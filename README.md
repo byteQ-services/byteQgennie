@@ -3,18 +3,16 @@ Local PDF Intelligence • FAISS Retrieval • Ollama Reasoning
 <p align="center"> <img src="https://img.shields.io/badge/Build-Passing-00C853?style=for-the-badge"> <img src="https://img.shields.io/badge/Version-1.0.0-2962FF?style=for-the-badge"> <img src="https://img.shields.io/badge/Framework-Flask-blue?style=for-the-badge"> <img src="https://img.shields.io/badge/Vector_DB-FAISS-orange?style=for-the-badge"> <img src="https://img.shields.io/badge/Embeddings-MiniLM--L6--v2-purple?style=for-the-badge"> <img src="https://img.shields.io/badge/LLM-Ollama_llama3.2-red?style=for-the-badge"> <img src="https://img.shields.io/badge/License-OpenSource-green?style=for-the-badge"> </p>
 <p align="center"></p>
 
-# 🧠 byteQgini – Local PDF + Ollama Chatbot (FAISS + LangChain)
+# byteQgini – Local Document Intelligence and Contextual Response Engine
 
-`byteQgini` is a local Retrieval-Augmented Generation (RAG) chatbot that:
+`byteQgini` is a fully local Retrieval-Augmented Generation (RAG) system that:
 
-- reads your **PDF files** from a folder,
-- builds a **FAISS vector index** using **HuggingFace embeddings**,
-- uses **Ollama (llama3.2)** as the LLM,
-- serves a **Flask web endpoint** that you can call from a frontend or simple HTML chat UI.
+- ingests and interprets PDF documents supplied in your designated data directory,
+- constructs a persistent FAISS vector index powered by HuggingFace transformer embeddings,
+- leverages Ollama (model: `llama3.2`) for contextual natural language response generation,
+- exposes a lightweight Flask-based HTTP interface suitable for browser clients, custom frontends, or programmatic access.
 
-It is designed to run **fully locally** (aside from model downloads), with automatic detection of new PDFs and periodic index updates.
-
----
+The application operates entirely on-device (with the exception of one-time model acquisition), providing ongoing automatic discovery of newly added PDF files and incremental index updates without requiring full reprocessing of the corpus.
 
 ## What This Project Delivers (Current Functional Scope)
 
