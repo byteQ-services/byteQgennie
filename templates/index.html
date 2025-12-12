@@ -1,69 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot</title>
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>byteQ Gini </title>
+
+  <!-- Bootstrap 4 -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Your style -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 </head>
 <body>
-    <div class="container-fluid h-100">
-        <div class="row justify-content-center h-100">        
-            <div class="col-md-8 col-xl-6 chat">
-                <div class="card">
-                    <div class="card-header msg_head">
-                        <div class="d-flex bd-highlight">
-                            <div class="user_info">
-                                <span>UPYOG Chatbot</span>
-                                <p>Ask me anything about UPYOG!</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="messageFormeight" class="card-body msg_card_body">
-                        <!-- Messages will be appended here -->
-                    </div>
-                    <div class="card-footer">
-                        <form id="messageArea" class="input-group" method="GET">
-                            <input type="text" id="text" name="msg" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required/>
-                            <div class="input-group-append">
-                                <button type="submit" id="send" class="input-group-text send_btn"><i class="fas fa-location-arrow"></i></button>
-                            </div>
-                        </form>
-                    </div>
+  <main class="app-shell">
+    <section class="chat-wrapper container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+          <div class="card app-card">
+            <header class="card-header app-header d-flex align-items-center">
+              <div class="brand">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="logo" class="brand-logo" onerror="this.style.display='none'">
+                <div class="brand-text">
+                  <h1>byteQ Gini</h1>
+                  <p class="muted">Ask anything about your project.</p>
                 </div>
+              </div>
+              <div class="header-actions ml-auto">
+                <button id="inspectBtn" class="btn btn-sm btn-outline-secondary" title="Inspect (dev)">Inspect</button>
+              </div>
+            </header>
+
+            <!-- message area -->
+            <div id="messageFormeight" class="card-body messages-area" aria-live="polite" aria-atomic="true">
+              <!-- welcome message -->
+              <div class="system-welcome text-center mb-3">
+                <strong>Welcome!</strong> Ask anything about your documents. Upload PDFs to <code>/data/</code>.
+              </div>
             </div>
+
+            <!-- thinking indicator (hidden until needed) -->
+            <div id="thinkingIndicator" class="thinking d-none align-items-center px-3 py-2">
+              <div class="spinner-ring" aria-hidden="true"></div>
+              <div class="thinking-text ml-2">Thinking<span class="dotting">...</span></div>
+            </div>
+
+            <!-- input footer -->
+            <footer class="card-footer input-footer">
+              <form id="messageArea" class="w-100 d-flex" method="GET" autocomplete="off" role="search">
+                <textarea id="text" name="msg" class="form-control input-text" placeholder="Type your question. Press Enter to send (Shift+Enter for newline)." rows="1" required></textarea>
+                <div class="input-actions d-flex align-items-center">
+                  <button type="submit" id="send" class="btn btn-primary send-btn ml-2" aria-label="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                  </button>
+                </div>
+              </form>
+            </footer>
+          </div> <!-- card -->
         </div>
-    </div>
-    <script>
-        $(document).ready(function() {
-            $("#messageArea").on("submit", function(event) {
-                const date = new Date();
-                const hour = date.getHours();
-                const minute = date.getMinutes();
-                const str_time = hour + ":" + minute;
-                var rawText = $("#text").val();
+      </div>
+    </section>
+  </main>
 
-                var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + rawText + '<span class="msg_time_send">' + str_time + '</span></div></div>';
-                
-                $("#text").val("");
-                $("#messageFormeight").append(userHtml);
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
-                $.ajax({
-                    data: {
-                        msg: rawText,  
-                    },
-                    type: "GET",
-                    url: "/get",
-                }).done(function(data) {
-                    var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="msg_cotainer">' + data + '<span class="msg_time">' + str_time + '</span></div></div>';
-                    $("#messageFormeight").append($.parseHTML(botHtml));
-                });
-                event.preventDefault();
-            });
+  <script>
+    // --- utilities ---
+    function escapeHtml(unsafe) {
+      return unsafe
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+    function formatTime(d) {
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      return hh + ':' + mm;
+    }
+    function appendMessageHtml(html) {
+      const $container = $("#messageFormeight");
+      $container.append(html);
+      $container.scrollTop($container.prop("scrollHeight"));
+    }
+
+    // --- thinking UI controls ---
+    function showThinking() {
+      $("#thinkingIndicator").removeClass("d-none");
+    }
+    function hideThinking() {
+      $("#thinkingIndicator").addClass("d-none");
+    }
+
+    $(function() {
+      // Auto-resize textarea
+      const $text = $("#text");
+      function autoResize(el) {
+        el.style.height = "auto";
+        el.style.height = Math.min(el.scrollHeight, 220) + "px";
+      }
+      $text.on("input", function(){ autoResize(this); });
+
+      // Send handler
+      $("#messageArea").on("submit", function(ev) {
+        ev.preventDefault();
+        let rawText = $text.val() || "";
+        rawText = rawText.trim();
+        if (!rawText) return;
+
+        // user bubble
+        const now = new Date();
+        const ts = formatTime(now);
+        const safeUser = escapeHtml(rawText).replace(/\n/g, "<br/>");
+        const userHtml = `
+          <div class="message-row message-row--user mb-3 d-flex justify-content-end">
+            <div class="bubble bubble--user">
+              <div class="bubble-text">${safeUser}</div>
+              <div class="bubble-meta">${ts}</div>
+            </div>
+          </div>
+        `;
+        appendMessageHtml(userHtml);
+        $text.val("").focus();
+        autoResize($text[0]);
+
+        // Show thinking + spinner and disable send input
+        showThinking();
+        $("#send").attr("disabled", true);
+        $text.prop("disabled", true);
+
+        // AJAX call
+        $.ajax({
+          url: "/get",
+          method: "GET", // keep compatible with your existing route
+          data: { msg: rawText },
+          timeout: 30000
+        }).done(function(data) {
+          // server may return JSON or plain text
+          let replyText = "";
+          if (typeof data === "object" && data !== null && data.reply) {
+            replyText = String(data.reply);
+          } else {
+            replyText = String(data);
+          }
+          const safeBot = escapeHtml(replyText).replace(/\n/g, "<br/>");
+          const botHtml = `
+            <div class="message-row message-row--bot mb-3 d-flex">
+              <div class="bubble bubble--bot">
+                <div class="bubble-text">${safeBot}</div>
+                <div class="bubble-meta">${formatTime(new Date())}</div>
+              </div>
+            </div>
+          `;
+          appendMessageHtml(botHtml);
+        }).fail(function(jqXHR, textStatus){
+          const err = textStatus === "timeout" ? "Request timed out. Try again." : "Something went wrong. Please try again.";
+          const errHtml = `
+            <div class="message-row message-row--bot mb-3 d-flex">
+              <div class="bubble bubble--bot bubble--error">
+                <div class="bubble-text">${escapeHtml(err)}</div>
+                <div class="bubble-meta">${formatTime(new Date())}</div>
+              </div>
+            </div>
+          `;
+          appendMessageHtml(errHtml);
+        }).always(function(){
+          hideThinking();
+          $("#send").attr("disabled", false);
+          $text.prop("disabled", false).focus();
         });
-    </script>
+      });
+
+      // Enter to send, Shift+Enter newline
+      $text.on("keydown", function(e) {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          $("#messageArea").submit();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
